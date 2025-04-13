@@ -1,4 +1,4 @@
-name: Build and Push docker Image
+name: build and push docker image
 
 on:
   push:
@@ -13,18 +13,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: checkout repo
         uses: actions/checkout@v4
 
-      - name: Debug token
+      - name: debug token
         run: echo "GITHUB_TOKEN is available"
         env:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Log in to GitHub Container Registry
+      - name: log in to gitHub container registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Build and push image with docker
+      - name: build and push image with docker
         working-directory: ./
         run: |
           OWNER="${{ github.repository_owner }}"
