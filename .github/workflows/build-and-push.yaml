@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      gitUsername: ${{ github.repository_owner }}
+      githubUsername: ${{ github.repository_owner.toLowerCase() }}
 
     steps:
       - name: Checkout repo
@@ -23,7 +23,6 @@ jobs:
         run: echo "GITHUB_TOKEN is available"
         env:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          githubUsername: ${{ github.repository_owner.toLowerCase() }}
 
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
