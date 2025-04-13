@@ -32,18 +32,3 @@ jobs:
           IMAGE=ghcr.io/$OWNER_LOWER/gitops-sample-app:latest
           docker build -t $IMAGE .
           docker push $IMAGE
-
-      - name: Update Kubernetes manifest with new image tag
-        run: |
-          OWNER="${{ github.repository_owner }}"
-          OWNER_LOWER=$(echo "$OWNER" | tr '[:upper:]' '[:lower:]')
-          IMAGE=ghcr.io/$OWNER_LOWER/gitops-sample-app:latest
-          sed -i "s|image:.*|image: $IMAGE_LOWER|" k8s/deployment.yaml
-
-      - name: Commit updated manifest
-        run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          git add k8s/deployment.yaml
-          git commit -m "Update image tag [skip ci]" || echo "No changes"
-          git push

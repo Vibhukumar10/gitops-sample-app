@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: nextjs-app
-          image: 
+          image: ghcr.io/vibhukumar10/gitops-sample-app:latest
           ports:
             - containerPort: 3000
           resources:
