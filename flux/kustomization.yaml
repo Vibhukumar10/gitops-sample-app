@@ -9,5 +9,5 @@ spec:
   prune: true
   sourceRef:
     kind: GitRepository
-    name: gitops-app
+    name: gitops-sample-app
   targetNamespace: default
