@@ -23,7 +23,8 @@ jobs:
         uses: docker/setup-qemu-action@v3
 
       - name: Set up Podman
-        uses: redhat-actions/podman-install@v1
+        uses: redhat-actions/podman-install@v1.7.0
+
 
       - name: Debug token
         run: echo "GITHUB_TOKEN is available"
@@ -34,7 +35,7 @@ jobs:
         run: echo "${{ secrets.GITHUB_TOKEN }}" | podman login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build and push image with Podman
-        working-directory: ./app
+        working-directory: ./
         run: |
           IMAGE=ghcr.io/${{ github.repository_owner }}/gitops-sample-app:latest
           podman build -t $IMAGE .
