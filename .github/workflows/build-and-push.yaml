@@ -1,4 +1,4 @@
-name: Build and Push Podman Image
+name: Build and Push docker Image
 
 on:
   push:
@@ -19,27 +19,20 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Set up QEMU (for multi-platform builds)
-        uses: docker/setup-qemu-action@v3
-
-      - name: Set up Podman
-        uses: redhat-actions/podman-install@v1.7.0
-
-
       - name: Debug token
         run: echo "GITHUB_TOKEN is available"
         env:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Log in to GitHub Container Registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | podman login ghcr.io -u ${{ github.actor }} --password-stdin
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Build and push image with Podman
+      - name: Build and push image with docker
         working-directory: ./
         run: |
           IMAGE=ghcr.io/${{ github.repository_owner }}/gitops-sample-app:latest
-          podman build -t $IMAGE .
-          podman push $IMAGE
+          docker build -t $IMAGE .
+          docker push $IMAGE
 
       - name: Update Kubernetes manifest with new image tag
         run: |
