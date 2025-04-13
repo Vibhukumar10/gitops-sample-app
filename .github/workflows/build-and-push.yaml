@@ -12,19 +12,24 @@ steps:
 - name: Set up Podman
   uses: redhat-actions/podman-install@v1
 
+- name: Debug token
+  run: echo "GITHUB_TOKEN is available"
+  env:
+    TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 - name: Log in to GitHub Container Registry
-  run: echo "${{ secrets.GITHUB_TOKEN }}" | podman login ghcr.io -u ${{ github.actor }} --password-stdin
+  run: echo "${{ secrets.GITHUB_TOKEN }}" | podman login ghcr.io -u ${{ gitUsername }} --password-stdin
 
 - name: Build image with Podman
   working-directory: ./app
   run: |
-    IMAGE=ghcr.io/${{ github.repository_owner }}/my-gitops-app:latest
+    IMAGE=ghcr.io/${{ gitUsername }}/gitops-sample-app:latest
     podman build -t $IMAGE .
     podman push $IMAGE
 
 - name: Update Kubernetes manifest with new image tag
   run: |
-    IMAGE=ghcr.io/${{ github.repository_owner }}/my-gitops-app:latest
+    IMAGE=ghcr.io/${{ gitUsername }}/gitops-sample-app:latest
     sed -i "s|image:.*|image: $IMAGE|" k8s/deployment.yaml
 
 - name: Commit updated manifest
