@@ -17,5 +17,6 @@ spec:
       containers:
         - name: nextjs-app
           image: ghcr.io/vibhukumar10/gitops-sample-app:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 3000
