@@ -37,7 +37,8 @@ jobs:
       - name: Update Kubernetes manifest with new image tag
         run: |
           IMAGE=ghcr.io/${{ github.repository_owner }}/gitops-sample-app:latest
-          sed -i "s|image:.*|image: $IMAGE|" k8s/deployment.yaml
+          IMAGE_LOWER=$(echo "$IMAGE" | tr '[:upper:]' '[:lower:]')
+          sed -i "s|image:.*|image: $IMAGE_LOWER|" k8s/deployment.yaml
 
       - name: Commit updated manifest
         run: |
