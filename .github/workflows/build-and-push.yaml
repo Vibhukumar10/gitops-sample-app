@@ -12,9 +12,6 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
 
-    env:
-      githubUsername: ${{ github.repository_owner.toLowerCase() }}
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -30,13 +27,17 @@ jobs:
       - name: Build and push image with docker
         working-directory: ./
         run: |
-          IMAGE=ghcr.io/${{ githubUsername }}/gitops-sample-app:latest
+          OWNER="${{ github.repository_owner }}"
+          OWNER_LOWER=$(echo "$OWNER" | tr '[:upper:]' '[:lower:]')
+          IMAGE=ghcr.io/$OWNER_LOWER/gitops-sample-app:latest
           docker build -t $IMAGE .
           docker push $IMAGE
 
       - name: Update Kubernetes manifest with new image tag
         run: |
-          IMAGE=ghcr.io/${{ githubUsername }}/gitops-sample-app:latest
+          OWNER="${{ github.repository_owner }}"
+          OWNER_LOWER=$(echo "$OWNER" | tr '[:upper:]' '[:lower:]')
+          IMAGE=ghcr.io/$OWNER_LOWER/gitops-sample-app:latest
           sed -i "s|image:.*|image: $IMAGE_LOWER|" k8s/deployment.yaml
 
       - name: Commit updated manifest
