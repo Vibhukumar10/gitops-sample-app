@@ -23,6 +23,7 @@ jobs:
         run: echo "GITHUB_TOKEN is available"
         env:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          githubUsername: ${{ github.repository_owner.toLowerCase() }}
 
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
@@ -30,14 +31,13 @@ jobs:
       - name: Build and push image with docker
         working-directory: ./
         run: |
-          IMAGE=ghcr.io/${{ github.repository_owner }}/gitops-sample-app:latest
+          IMAGE=ghcr.io/${{ githubUsername }}/gitops-sample-app:latest
           docker build -t $IMAGE .
           docker push $IMAGE
 
       - name: Update Kubernetes manifest with new image tag
         run: |
-          IMAGE=ghcr.io/${{ github.repository_owner }}/gitops-sample-app:latest
-          IMAGE_LOWER=$(echo "$IMAGE" | tr '[:upper:]' '[:lower:]')
+          IMAGE=ghcr.io/${{ githubUsername }}/gitops-sample-app:latest
           sed -i "s|image:.*|image: $IMAGE_LOWER|" k8s/deployment.yaml
 
       - name: Commit updated manifest
