@@ -1,0 +1,36 @@
+permissions:
+  contents: write
+  packages: write
+
+steps:
+- name: Checkout repo
+  uses: actions/checkout@v4
+
+- name: Set up QEMU (for multi-platform builds)
+  uses: docker/setup-qemu-action@v3
+
+- name: Set up Podman
+  uses: redhat-actions/podman-install@v1
+
+- name: Log in to GitHub Container Registry
+  run: echo "${{ secrets.GITHUB_TOKEN }}" | podman login ghcr.io -u ${{ github.actor }} --password-stdin
+
+- name: Build image with Podman
+  working-directory: ./app
+  run: |
+    IMAGE=ghcr.io/${{ github.repository_owner }}/my-gitops-app:latest
+    podman build -t $IMAGE .
+    podman push $IMAGE
+
+- name: Update Kubernetes manifest with new image tag
+  run: |
+    IMAGE=ghcr.io/${{ github.repository_owner }}/my-gitops-app:latest
+    sed -i "s|image:.*|image: $IMAGE|" k8s/deployment.yaml
+
+- name: Commit updated manifest
+  run: |
+    git config user.name "github-actions"
+    git config user.email "actions@github.com"
+    git add k8s/deployment.yaml
+    git commit -m "Update image tag [skip ci]" || echo "No changes"
+    git push
